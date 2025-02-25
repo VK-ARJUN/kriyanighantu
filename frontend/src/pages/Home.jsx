@@ -9,15 +9,27 @@ const Home = () => {
 
   const handleSearch = () => {
     if (query.trim()) {
-      navigate(`/${searchType}?q=${query}`);
+      navigate(`/search?q=${query.trim()}&type=${searchType}`);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
     }
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 px-4">
-      <h1 className="text-4xl md:text-5xl font-bold text-slate-700 mb-6 text-center">Welcome to Kriyanighantu</h1>
-      <h2 className="text-xl md:text-2xl font-semibold text-slate-400 mb-4 text-center">Thesaurus of Synonymous Sanskrit Verbs</h2>
-      <p className="text-base md:text-lg text-slate-600 mb-4 text-center">Search for Sanskrit Verbs, Roots, or Lookups</p>
+      <h1 className="text-4xl md:text-5xl font-bold text-slate-700 mb-6 text-center">
+        Welcome to Kriyanighantu
+      </h1>
+      <h2 className="text-xl md:text-2xl font-semibold text-slate-400 mb-4 text-center">
+        Thesaurus of Synonymous Sanskrit Verbs
+      </h2>
+      <p className="text-base md:text-lg text-slate-600 mb-4 text-center">
+        Search for Sanskrit Verbs, Roots, or Lookups
+      </p>
       <div className="bg-slate-200 shadow-lg rounded-lg p-6 w-full max-w-md flex flex-col items-center">
         <select
           className="w-full p-2 mb-4 border rounded-md text-slate-700"
@@ -35,6 +47,7 @@ const Home = () => {
             placeholder={`Search ${searchType}...`}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyPress}
           />
           <button
             onClick={handleSearch}

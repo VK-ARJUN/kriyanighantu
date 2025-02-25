@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import neo4j from "neo4j-driver";
+import verbRoutes from "./routes/verbRoutes.js";
+import lookupRoutes from "./routes/lookupRoutes.js";
+import rootRoutes from "./routes/rootRoutes.js";
+import "./sync.js";
 
 dotenv.config();
 
@@ -30,8 +34,12 @@ neo4jDriver
   .then(() => console.log("✅ Connected to Neo4j"))
   .catch((err) => console.error("❌ Neo4j connection error:", err));
 
+export { neo4jDriver }; // Exporting the driver to use in other files
+
 app.listen(3001, () => {
   console.log("🚀 Server is running on port 3001");
 });
 
-export { neo4jDriver }; // Exporting the driver to use in other files
+app.use("server/api/verbs", verbRoutes);
+app.use("server/api/lookups", lookupRoutes);
+app.use("server/api/roots", rootRoutes);
