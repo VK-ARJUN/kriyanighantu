@@ -40,6 +40,6 @@ app.listen(3001, () => {
   console.log("🚀 Server is running on port 3001");
 });
 
-app.use("server/api/verbs", verbRoutes);
-app.use("server/api/lookups", lookupRoutes);
-app.use("server/api/roots", rootRoutes);
+app.use("/api/verbs", verbRoutes);
+app.use("/api/lookups", lookupRoutes);
+app.use("/api/roots", rootRoutes);

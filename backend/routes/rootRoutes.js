@@ -1,9 +1,9 @@
 import express from "express";
-import { getRootDetails, searchRoots } from "../controllers/rootController.js";
+import { getAllRoots, searchRoots } from "../controllers/rootController.js";
 
 const router = express.Router();
 
-router.get("/", searchRoots);
-router.get("/:root", getRootDetails);
+router.get("/search", searchRoots);
+router.get("/", getAllRoots);
 
 export default router;

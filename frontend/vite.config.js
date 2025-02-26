@@ -9,8 +9,8 @@ export default defineConfig({
       usePolling: true,
     },
     proxy: {
-      "/server": {
-        target: "http://localhost:5001",
+      "/api": {
+        target: "http://localhost:3001",
         secure: false,
         changeOrigin: true,
       },
