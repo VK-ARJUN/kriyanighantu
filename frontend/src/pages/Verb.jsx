@@ -1,20 +1,30 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
+import { useNavigate, useLocation } from "react-router-dom";
 import SanskritKeyboard from "../components/SanskritKeyboard.jsx";
 
 const Verb = () => {
   const [verbs, setVerbs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedVerb, setExpandedVerb] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleVerbExpansion = (verbId) => {
     setExpandedVerb(expandedVerb === verbId ? null : verbId); // Ensures only one verb expands
   };
 
   useEffect(() => {
-    fetchVerbs();
-  }, []);
+    const params = new URLSearchParams(location.search);
+    const query = params.get("search");
+    if (query) {
+      setSearchQuery(query);
+      handleSearch(query);
+    } else {
+      fetchVerbs();
+    }
+  }, [location.search]);
 
   const fetchVerbs = async () => {
     try {
@@ -39,6 +49,10 @@ const Verb = () => {
       console.error("Error searching verbs:", error);
     }
   };
+
+  const handleLookupSearch = (lookup) => {
+    navigate(`/lookups?search=${lookup}`);
+  }
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
@@ -72,8 +86,8 @@ const Verb = () => {
               className="border p-4 rounded-lg shadow-md bg-gray-100 w-full md:w-3/4 mx-auto"
             >
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-bold text-gray-600">
-                  {verb.verb} ({verb.lookup})
+                <h2 className="text-lg font-bold text-gray-400">
+                  <span className="text-blue-500">{verb.verb}</span> ({verb.lookup})
                 </h2>
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
@@ -100,14 +114,17 @@ const Verb = () => {
                   {Array.isArray(verb.seeAlso) && verb.seeAlso.length > 0 && (
                     <div className="mt-2">
                       <strong>See Also:</strong>
-                      {verb.seeAlso.map((lookup,index) => (
-                        <a
-                          key={index}
-                          href={`/lookups?query=${lookup}`}
-                          className="text-blue-500 ml-2"
-                        >
-                          {lookup}
-                        </a>
+                      {verb.seeAlso.map((lookup, index) => (
+                        <span key={index} className="inline">
+                          <button
+                            key={index}
+                            onClick={() => handleLookupSearch(lookup)}
+                            className="text-blue-500 ml-2 underline"
+                          >
+                            {lookup}
+                          </button>
+                          {index < verb.seeAlso.length - 1 ? " ," : ""}
+                        </span>
                       ))}
                     </div>
                   )}
@@ -116,15 +133,16 @@ const Verb = () => {
                   {verb.synonyms && verb.synonyms.length > 0 && (
                     <div className="mt-2">
                       <strong>Synonyms:</strong>
-                      {verb.synonyms.map((synVerb) => (
-                        <a
-                          key={synVerb.id}
-                          href="#"
-                          onClick={() => handleSearch(synVerb.verb)}
-                          className="text-blue-500 ml-2"
-                        >
-                          {synVerb.verb} ({synVerb.lookup})
-                        </a>
+                      {verb.synonyms.map((synVerb, index) => (
+                        <span key={synVerb.id} className="inline">
+                          <button
+                            onClick={() => handleSearch(synVerb.verb)}
+                            className="text-blue-500 ml-2 hover:underline"
+                          >
+                            {synVerb.verb} ({synVerb.lookup})
+                          </button>
+                          {index < verb.synonyms.length - 1 ? ", " : ""}
+                        </span>
                       ))}
                     </div>
                   )}

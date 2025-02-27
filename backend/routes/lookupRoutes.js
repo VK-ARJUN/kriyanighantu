@@ -1,12 +1,12 @@
 import express from "express";
 import {
   searchLookups,
-  getLookupDetails,
+  getAllLookups,
 } from "../controllers/lookupController.js";
 
 const router = express.Router();
 
-router.get("/", searchLookups);
-router.get("/:lookup", getLookupDetails);
+router.get("/search", searchLookups);
+router.get("/", getAllLookups);
 
 export default router;

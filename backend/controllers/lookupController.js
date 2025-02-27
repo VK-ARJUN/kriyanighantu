@@ -1,47 +1,77 @@
 import { neo4jDriver } from "../index.js";
 
-// Search for lookups
-export const searchLookups = async (req, res) => {
+// Get all lookups
+export const getAllLookups = async (req, res) => {
+  const session = neo4jDriver.session();
   try {
-    const query = req.query.q;
-    if (!query)
-      return res.status(400).json({ error: "Query parameter is required" });
-
-    const session = neo4jDriver.session();
     const result = await session.run(
-      `MATCH (l:Lookup) WHERE l.lookup CONTAINS $query RETURN l`,
-      { query }
+      `MATCH (l:Lookup)
+      OPTIONAL MATCH (v:Verb)-[:HAS_LOOKUP]->(l)
+      RETURN l, collect(v.verb) AS verbs`
     );
 
-    session.close();
-    const lookups = result.records.map((record) => record.get("l").properties);
+    const lookups = result.records.map((record) => {
+      const lookupNode = record.get("l").properties;
+      const verbs = record.get("verbs")
+        ? record.get("verbs").filter(Boolean)
+        : [];
+
+      return {
+        lookup: lookupNode.lookup || "-",
+        englishMeaning: lookupNode.englishMeaning || "-",
+        reference: lookupNode.reference || "-",
+        verbs, // Only verb names as an array
+      };
+    });
+
     res.json(lookups);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching lookups:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    await session.close();
   }
 };
 
-// Get lookup details
-export const getLookupDetails = async (req, res) => {
-  try {
-    const lookupName = req.params.lookup;
+// Search lookups
+export const searchLookups = async (req, res) => {
+  const session = neo4jDriver.session();
+  const { query } = req.query;
 
-    const session = neo4jDriver.session();
+  try {
     const result = await session.run(
-      `MATCH (l:Lookup {lookup: $lookup})<-[:HAS_LOOKUP]-(v:Verb) RETURN l, collect(v) AS verbs`,
-      { lookup: lookupName }
+      `MATCH (l:Lookup)
+      WHERE toLower(l.lookup) CONTAINS toLower($query) OR toLower(l.englishMeaning) CONTAINS toLower($query)
+      OPTIONAL MATCH (v:Verb)-[:HAS_LOOKUP]->(l)
+      RETURN l, collect(v.verb) AS verbs,
+      CASE 
+        WHEN toLower(l.lookup) = toLower($query) THEN 3  // Exact match
+        WHEN toLower(l.lookup) STARTS WITH toLower($query) THEN 2  // Prefix match
+        ELSE 1  // Partial match
+      END AS priority
+      ORDER BY priority DESC, l.lookup`,
+      { query }
     );
 
-    session.close();
-    if (result.records.length === 0) {
-      return res.status(404).json({ error: "Lookup not found" });
-    }
+    const lookups = result.records.map((record) => {
+      const lookupNode = record.get("l").properties;
+      const verbs = record.get("verbs")
+        ? record.get("verbs").filter(Boolean)
+        : [];
 
-    const lookup = result.records[0].get("l").properties;
-    const verbs = result.records[0].get("verbs").map((v) => v.properties);
+      return {
+        lookup: lookupNode.lookup || "-",
+        englishMeaning: lookupNode.englishMeaning || "-",
+        reference: lookupNode.reference || "-",
+        verbs, // Only verb names as an array
+      };
+    });
 
-    res.json({ ...lookup, verbs });
+    res.json(lookups);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error searching lookups:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    await session.close();
   }
 };
