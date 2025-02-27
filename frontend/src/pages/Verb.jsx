@@ -8,6 +8,7 @@ const Verb = () => {
   const [verbs, setVerbs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedVerb, setExpandedVerb] = useState(null);
+  const [noResults, setNoResults] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -39,12 +40,14 @@ const Verb = () => {
     setSearchQuery(query);
     if (query === "") {
       fetchVerbs();
+      setNoResults(false);
       return;
     }
 
     try {
       const response = await axios.get(`/api/verbs/search?query=${query}`);
       setVerbs(response.data);
+      setNoResults(response.data.length === 0);
     } catch (error) {
       console.error("Error searching verbs:", error);
     }
@@ -52,6 +55,10 @@ const Verb = () => {
 
   const handleLookupSearch = (lookup) => {
     navigate(`/lookups?search=${lookup}`);
+  }
+
+  const handleRootSearch = (root) => {
+    navigate(`/roots?search=${root}`);
   }
 
   return (
@@ -78,6 +85,13 @@ const Verb = () => {
           <SanskritKeyboard onKeyClick={(char) => handleSearch(searchQuery + char)} />
         </div>
 
+        {noResults && (
+          <p className="text-red-500 text-center font-bold mt-4">
+            No results found for: <span className="text-blue-500">{searchQuery}</span>
+          </p>
+        )}
+
+
         {/* Verbs List */}
         <div className="w-full mt-6 space-y-4">
           {verbs.map((verb) => (
@@ -87,7 +101,7 @@ const Verb = () => {
             >
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-bold text-gray-400">
-                  <span className="text-blue-500">{verb.verb}</span> ({verb.lookup})
+                  <span className="text-gray-700">{verb.verb}</span> ({verb.lookup})
                 </h2>
                 <button
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
@@ -100,9 +114,23 @@ const Verb = () => {
               {/* Expanded Verb Details */}
               {expandedVerb === verb.id && (
                 <div className="mt-2 text-gray-700">
-                  <p><strong>Lookup:</strong> {verb.lookup}</p>
+                  <p><strong>Lookup:</strong>{" "}
+                    <button
+                      onClick={() => handleLookupSearch(verb.lookup)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {verb.lookup}
+                    </button>
+                  </p>
                   <p><strong>English Meaning:</strong> {verb.lookupMeaning}</p>
-                  <p><strong>Root:</strong> {verb.root}</p>
+                  <p><strong>Root:</strong>{" "}
+                    <button
+                      onClick={() => handleRootSearch(verb.root)}
+                      className="text-blue-500 hover:underline"
+                    >
+                      {verb.root}
+                    </button>
+                  </p>
                   <p><strong>Root Index:</strong> {verb.rootIndex}</p>
                   <p><strong>Ganam:</strong> {verb.ganam}</p>
                   <p><strong>Properties:</strong> {verb.transVerb}</p>
@@ -119,7 +147,7 @@ const Verb = () => {
                           <button
                             key={index}
                             onClick={() => handleLookupSearch(lookup)}
-                            className="text-blue-500 ml-2 underline"
+                            className="text-blue-500 ml-2 hover:underline"
                           >
                             {lookup}
                           </button>
@@ -139,7 +167,7 @@ const Verb = () => {
                             onClick={() => handleSearch(synVerb.verb)}
                             className="text-blue-500 ml-2 hover:underline"
                           >
-                            {synVerb.verb} ({synVerb.lookup})
+                            {synVerb.verb}
                           </button>
                           {index < verb.synonyms.length - 1 ? ", " : ""}
                         </span>

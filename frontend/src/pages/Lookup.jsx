@@ -8,6 +8,7 @@ const Lookup = () => {
   const [lookups, setLookups] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedLookup, setExpandedLookup] = useState(null);
+  const [noResults, setNoResults] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -35,11 +36,13 @@ const Lookup = () => {
     setSearchQuery(query);
     if (query === "") {
       fetchLookups();
+      setNoResults(false);
       return;
     }
     try {
       const response = await axios.get(`/api/lookups/search?query=${query}`);
       setLookups(response.data);
+      setNoResults(response.data.length === 0);
     } catch (error) {
       console.error("Error searching lookups:", error);
     }
@@ -71,6 +74,12 @@ const Lookup = () => {
           <SanskritKeyboard onKeyClick={(char) => handleSearch(searchQuery + char)} />
         </div>
 
+        {noResults && (
+          <p className="text-red-500 text-center font-bold mt-4">
+            No results found for: <span className="text-blue-500">{searchQuery}</span>
+          </p>
+        )}
+
         <div className="w-full mt-6 space-y-4">
           {lookups.map((lookup) => (
             <div key={lookup.lookup} className="border p-4 rounded-lg shadow-md bg-gray-100 w-full md:w-3/4 mx-auto">
@@ -88,7 +97,7 @@ const Lookup = () => {
 
                   {lookup.verbs && lookup.verbs.length > 0 && (
                     <div className="mt-2">
-                      <strong>Related Verbs:</strong>
+                      <strong>Synonyms:</strong>
                       {lookup.verbs.map((verb, index) => (
                         <span key={index} className="inline">
                           <button

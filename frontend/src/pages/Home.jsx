@@ -4,9 +4,9 @@ const Home = () => {
   const navigate = useNavigate();
 
   const options = [
-    { title: "Search Root", path: "/roots", color: "bg-blue-200" },
-    { title: "Search Verb", path: "/verbs", color: "bg-green-200" },
-    { title: "Search Lookup", path: "/lookups", color: "bg-blue-200" },
+    { title: "Search By Root", path: "/roots", color: "bg-blue-200" },
+    { title: "Search By Verb", path: "/verbs", color: "bg-green-200" },
+    { title: "Search By Meaning", path: "/lookups", color: "bg-blue-200" },
   ];
 
   return (

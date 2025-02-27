@@ -7,7 +7,8 @@ export const getAllLookups = async (req, res) => {
     const result = await session.run(
       `MATCH (l:Lookup)
       OPTIONAL MATCH (v:Verb)-[:HAS_LOOKUP]->(l)
-      RETURN l, collect(v.verb) AS verbs`
+      RETURN l, collect(v.verb) AS verbs
+      ORDER BY l.lookup`
     );
 
     const lookups = result.records.map((record) => {
@@ -41,7 +42,7 @@ export const searchLookups = async (req, res) => {
   try {
     const result = await session.run(
       `MATCH (l:Lookup)
-      WHERE toLower(l.lookup) CONTAINS toLower($query) OR toLower(l.englishMeaning) CONTAINS toLower($query)
+      WHERE toLower(l.lookup) CONTAINS toLower($query)
       OPTIONAL MATCH (v:Verb)-[:HAS_LOOKUP]->(l)
       RETURN l, collect(v.verb) AS verbs,
       CASE 
