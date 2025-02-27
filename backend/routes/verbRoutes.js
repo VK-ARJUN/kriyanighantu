@@ -1,12 +1,9 @@
 import express from "express";
-import { searchVerbs, getVerbDetails } from "../controllers/verbController.js";
+import { getAllVerbs, searchVerbs } from "../controllers/verbController.js";
 
 const router = express.Router();
 
-// Route to search for verbs or get all verbs
-router.get("/", searchVerbs);
-
-// Route to get details of a specific verb by name
-router.get("/:verb", getVerbDetails);
+router.get("/", getAllVerbs);
+router.get("/search", searchVerbs);
 
 export default router;

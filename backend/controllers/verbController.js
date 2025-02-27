@@ -1,60 +1,101 @@
 import { neo4jDriver } from "../index.js";
 
-// Search for verbs based on a query
-export const searchVerbs = async (req, res) => {
+// Get all verbs from Neo4j
+export const getAllVerbs = async (req, res) => {
+  const session = neo4jDriver.session();
   try {
-    const query = req.query.q;
-    if (!query)
-      return res.status(400).json({ error: "Query parameter is required" });
-
-    const session = neo4jDriver.session();
     const result = await session.run(
-      `MATCH (v:Verb) WHERE v.verb CONTAINS $query RETURN v`,
-      { query }
+      `MATCH (v:Verb)-[:HAS_LOOKUP]->(l:Lookup)
+      OPTIONAL MATCH (v)-[:HAS_LOOKUP]->(sa:Lookup)
+      OPTIONAL MATCH (syn:Verb)-[:HAS_LOOKUP]->(l)
+      RETURN v, l, v.seeAlso AS seeAlso, collect(DISTINCT syn) AS synonyms
+      ORDER BY v.verb`
     );
 
-    session.close();
-    const verbs = result.records.map((record) => record.get("v").properties);
+    const verbs = result.records.map((record) => {
+      const verbNode = record.get("v").properties;
+      const lookupNode = record.get("l").properties;
+      const seeAlso = record.get("seeAlso")
+        ? record.get("seeAlso").filter((name) => name && name.trim() !== "")
+        : [];
+      const synonyms = record
+        .get("synonyms")
+        .map((syn) => syn.properties)
+        .filter((syn) => syn.verb !== verbNode.verb);
+
+      return {
+        id: verbNode._id || "-",
+        verb: verbNode.verb || "-",
+        lookup: lookupNode.lookup || "-",
+        lookupMeaning: lookupNode.englishMeaning || "-",
+        root: verbNode.root || "-",
+        rootIndex: verbNode.rootIndex || "-",
+        ganam: verbNode.ganam || "-",
+        transVerb: verbNode.transVerb || "-",
+        ItAgma: verbNode.ItAgma || "-",
+        derivation: verbNode.derivation || "-",
+        example: verbNode.example || "-",
+        seeAlso,
+        synonyms,
+      };
+    });
+
     res.json(verbs);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error fetching verbs:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    await session.close();
   }
 };
 
-// Get verb details, including lookups and synonyms
-export const getVerbDetails = async (req, res) => {
-  try {
-    const verbName = req.params.verb;
-    const session = neo4jDriver.session();
+export const searchVerbs = async (req, res) => {
+  const session = neo4jDriver.session();
+  const { query } = req.query;
 
+  try {
     const result = await session.run(
-      `MATCH (v:Verb {verb: $verb})-[:HAS_LOOKUP]->(l:Lookup) 
-       OPTIONAL MATCH (s:Verb)-[:HAS_LOOKUP]->(l) WHERE s <> v
-       RETURN v, COLLECT(DISTINCT l) AS lookups, COLLECT(DISTINCT s) AS synonyms`,
-      { verb: verbName }
+      `MATCH (v:Verb)-[:HAS_LOOKUP]->(l:Lookup)
+      WHERE toLower(v.verb) CONTAINS toLower($query) OR toLower(l.lookup) CONTAINS toLower($query)
+      OPTIONAL MATCH (v)-[:HAS_LOOKUP]->(sa:Lookup)
+      OPTIONAL MATCH (syn:Verb)-[:HAS_LOOKUP]->(l)
+      RETURN v, l, collect(v.seeAlso) AS seeAlso, collect(DISTINCT syn) AS synonyms`,
+      { query }
     );
 
-    session.close();
+    const verbs = result.records.map((record) => {
+      const verbNode = record.get("v").properties;
+      const lookupNode = record.get("l").properties;
+      const seeAlso = record.get("seeAlso")
+        ? record.get("seeAlso").filter((name) => name && name.trim() !== "")
+        : [];
+      const synonyms = record
+        .get("synonyms")
+        .map((syn) => syn.properties)
+        .filter((syn) => syn.verb !== verbNode.verb);
 
-    if (result.records.length === 0) {
-      return res.status(404).json({ error: "Verb not found" });
-    }
-
-    const verb = result.records[0].get("v").properties;
-    const lookups = result.records[0]
-      .get("lookups")
-      .map((lookup) => lookup.properties);
-    const synonyms = result.records[0]
-      .get("synonyms")
-      .map((synonym) => synonym.properties.verb);
-
-    res.json({
-      ...verb,
-      meanings: lookups.map((lookup) => lookup.englishMeaning),
-      lookups, // Full lookup details
-      synonyms, // List of synonymous verb names
+      return {
+        id: verbNode.id || "-",
+        verb: verbNode.verb || "-",
+        lookup: lookupNode.lookup || "-",
+        lookupMeaning: lookupNode.englishMeaning || "-",
+        root: verbNode.root || "-",
+        rootIndex: verbNode.rootIndex || "-",
+        ganam: verbNode.ganam || "-",
+        transVerb: verbNode.transVerb || "-",
+        ItAgma: verbNode.ItAgma || "-",
+        derivation: verbNode.derivation || "-",
+        example: verbNode.example || "-",
+        seeAlso,
+        synonyms,
+      };
     });
+
+    res.json(verbs);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error searching verbs:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  } finally {
+    await session.close();
   }
 };
