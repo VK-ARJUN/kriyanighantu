@@ -53,7 +53,7 @@ const Home = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 1, ease: "easeOut", delay: 0.8 }}>
         <p>
-          A collaborative project between IIIT Kottayam and CIFSS, supported by Central Sanskrit University
+          A collaborative project between IIIT Kottayam and CIFSS, sponsored by Central Sanskrit University
         </p>
       </motion.footer>
     </div>

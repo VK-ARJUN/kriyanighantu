@@ -4,7 +4,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-6">
       <div className="bg-white p-8 shadow-lg rounded-lg w-full max-w-lg text-center">
-        <h2 className="text-3xl font-bold text-blue-800">Contact Us</h2>
+        <h2 className="text-3xl font-bold text-gray-800">Contact Us</h2>
         <p className="text-gray-600 mt-2">For any inquiries, reach out to:</p>
 
         {/* IIIT Kottayam Contact */}
@@ -17,10 +17,9 @@ const Contact = () => {
         
         {/* CIFSS Contact */}
         <div className="mt-6">
-          <h3 className="text-xl font-semibold text-gray-700">Centre for Indian Formal Studies (CIFSS)</h3>
+          <h3 className="text-xl font-semibold text-gray-700">Chinmaya International Foundation Shoda Sansthan(CIFSS)</h3>
           <p className="text-gray-600">Central Sanskrit University</p>
           <p className="text-gray-600">Email: <a href="mailto:contact@cifss.in" className="text-blue-500 hover:underline">contact@cifss.in</a></p>
-          <p className="text-gray-600">Website: <a href="https://cifss.in" className="text-blue-500 hover:underline" target="_blank" rel="noopener noreferrer">cifss.in</a></p>
         </div>
       </div>
     </div>
