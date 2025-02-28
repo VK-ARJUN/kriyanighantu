@@ -76,9 +76,9 @@ const Root = () => {
 
         <div className="w-full mt-6 space-y-4">
           {roots.map((root) => (
-            <div key={root.root} className="border p-4 rounded-lg shadow-md bg-blue-100 w-full md:w-3/4 mx-auto">
+            <div key={root.root} className="border p-4 rounded-lg shadow-md bg-gray-100 w-full md:w-3/4 mx-auto">
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-bold text-gray-600">{root.root}</h2>
+                <h2 className="text-lg font-bold text-gray-700">{root.root}</h2>
                 <button 
                   className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600"
                   onClick={() => setExpandedRoot(expandedRoot === root.root ? null : root.root)}
