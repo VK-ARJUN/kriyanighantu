@@ -38,7 +38,8 @@ const Home = () => {
       initial={{ x: 100, opacity: 0 }}  // Start 100px to the right, invisible
       animate={{ x: 0, opacity: 1 }}   // Move to final position, fully visible
       transition={{ duration: 0.5, delay: index * 0.1 }} // Stagger effect
-      className={`w-64 h-32 flex items-center justify-center ${option.color} text-lg font-semibold rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform`}
+      className={`w-64 h-32 flex items-center justify-center ${option.color} text-lg font-semibold rounded-lg shadow-lg cursor-pointer transition-transform`}
+      whileHover={{ scale: 1.1 }} // Scale up on hover
       onClick={() => navigate(option.path)}
     >
       {option.title}
