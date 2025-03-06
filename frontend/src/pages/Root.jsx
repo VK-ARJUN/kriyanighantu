@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { FaSearch } from "react-icons/fa";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SanskritKeyboard from "../components/SanskritKeyboard.jsx";
 
 const Root = () => {
@@ -10,6 +10,7 @@ const Root = () => {
   const [expandedRoot, setExpandedRoot] = useState(null);
   const [noResults, setNoResults] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
       const params = new URLSearchParams(location.search);
@@ -46,6 +47,10 @@ const Root = () => {
     } catch (error) {
       console.error("Error searching roots:", error);
     }
+  };
+
+  const handleVerbSearch = (verb) => {
+    navigate(`/verbs?search=${verb}`);
   };
 
   return (
@@ -89,8 +94,26 @@ const Root = () => {
 
               {expandedRoot === root.root && (
                 <div className="mt-2 text-gray-700">
-                  <p><strong>Ganam:</strong> {root.ganam}</p>
-                  <p><strong>Root Index:</strong> {root.rootIndex}</p>
+                  <p><strong>Gana (गण) :</strong> {root.ganam}</p>
+                  <p><strong>Root Index (धातुसंख्या) :</strong> {root.rootIndex}</p>
+
+                  {root.verbs && root.verbs.length > 0 && (
+                    <div className="mt-2">
+                      <strong>Associated Verbs :</strong>
+                      {root.verbs.map((verb, index) => (
+                        <span key={index} className="inline">
+                          <button
+                            key={index}
+                            onClick={() => handleVerbSearch(verb)}
+                            className="text-blue-500 hover:underline ml-2"
+                          >
+                            {verb}
+                          </button>
+                          {index < root.verbs.length - 1 && ", "}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>

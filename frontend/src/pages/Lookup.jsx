@@ -92,12 +92,12 @@ const Lookup = () => {
 
               {expandedLookup === lookup && (
                 <div className="mt-2 text-gray-700">
-                  <p><strong>English Meaning:</strong> {lookup.englishMeaning}</p>
-                  <p><strong>Bhattmalla Reference:</strong> {lookup.reference}</p>
+                  <p><strong>English Meaning :</strong> {lookup.englishMeaning}</p>
+                  <p><strong>Bhattmalla Reference :</strong> {lookup.reference}</p>
 
                   {lookup.verbs && lookup.verbs.length > 0 && (
                     <div className="mt-2">
-                      <strong>Synonyms:</strong>
+                      <strong>Synonyms (पर्यायाः) :</strong>
                       {lookup.verbs.map((verb, index) => (
                         <span key={index} className="inline">
                           <button

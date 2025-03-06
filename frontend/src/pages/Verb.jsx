@@ -114,7 +114,7 @@ const Verb = () => {
               {/* Expanded Verb Details */}
               {expandedVerb === verb.id && (
                 <div className="mt-2 text-gray-700">
-                  <p><strong>Lookup:</strong>{" "}
+                  <p><strong>Lookup :</strong>{" "}
                     <button
                       onClick={() => handleLookupSearch(verb.lookup)}
                       className="text-blue-500 hover:underline"
@@ -122,8 +122,8 @@ const Verb = () => {
                       {verb.lookup}
                     </button>
                   </p>
-                  <p><strong>English Meaning:</strong> {verb.lookupMeaning}</p>
-                  <p><strong>Root:</strong>{" "}
+                  <p><strong>English Meaning :</strong> {verb.lookupMeaning}</p>
+                  <p><strong>Root (धातुः) :</strong>{" "}
                     <button
                       onClick={() => handleRootSearch(verb.root)}
                       className="text-blue-500 hover:underline"
@@ -131,17 +131,17 @@ const Verb = () => {
                       {verb.root}
                     </button>
                   </p>
-                  <p><strong>Root Index:</strong> {verb.rootIndex}</p>
-                  <p><strong>Ganam:</strong> {verb.ganam}</p>
-                  <p><strong>Properties:</strong> {verb.transVerb}</p>
-                  <p><strong>It Agma:</strong> {verb.ItAgma}</p>
-                  <p><strong>Derivation:</strong> {verb.derivation}</p>
-                  <p><strong>Example:</strong> {verb.example}</p>
+                  <p><strong>Root Index (धातुसंख्या) :</strong> {verb.rootIndex}</p>
+                  <p><strong>Gana (गण) :</strong> {verb.ganam}</p>
+                  <p><strong>Properties (धातुविशेषाः) :</strong> {verb.transVerb}</p>
+                  <p><strong>It Agma (इट् आगमम्) :</strong> {verb.ItAgma}</p>
+                  <p><strong>Derivation (व्युत्पत्तिः) :</strong> {verb.derivation}</p>
+                  <p><strong>Example (उदाहरणम्) :</strong> {verb.example}</p>
 
                   {/* See Also */}
                   {Array.isArray(verb.seeAlso) && verb.seeAlso.length > 0 && (
                     <div className="mt-2">
-                      <strong>See Also:</strong>
+                      <strong>See Also :</strong>
                       {verb.seeAlso.map((lookup, index) => (
                         <span key={index} className="inline">
                           <button
@@ -160,7 +160,7 @@ const Verb = () => {
                   {/* Synonyms */}
                   {verb.synonyms && verb.synonyms.length > 0 && (
                     <div className="mt-2">
-                      <strong>Synonyms:</strong>
+                      <strong>Synonyms (पर्यायाः) :</strong>
                       {verb.synonyms.map((synVerb, index) => (
                         <span key={synVerb.id} className="inline">
                           <button

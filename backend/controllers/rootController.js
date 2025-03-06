@@ -1,10 +1,20 @@
 import Root from "../models/root.schema.js";
+import Verb from "../models/verb.schema.js";
 
 // Get all roots sorted alphabetically (Sanskrit order assumed)
 export const getAllRoots = async (req, res) => {
   try {
     const roots = await Root.find().sort({ root: 1 }); // Sorting alphabetically
-    res.json(roots);
+
+    // Fetch associated verbs for each root
+    const rootsWithVerbs = await Promise.all(
+      roots.map(async (root) => {
+        const verbs = await Verb.find({ root: root.root }).select("verb");
+        return { ...root.toObject(), verbs: verbs.map((v) => v.verb) };
+      })
+    );
+
+    res.json(rootsWithVerbs);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
   }
@@ -22,7 +32,15 @@ export const searchRoots = async (req, res) => {
       root: { $regex: new RegExp(query, "i") }, // Case-insensitive regex search
     }).sort({ root: 1 });
 
-    res.json(roots);
+    // Fetch associated verbs for each root
+    const rootsWithVerbs = await Promise.all(
+      roots.map(async (root) => {
+        const verbs = await Verb.find({ root: root.root }).select("verb");
+        return { ...root.toObject(), verbs: verbs.map((v) => v.verb) };
+      })
+    );
+
+    res.json(rootsWithVerbs);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error });
   }
