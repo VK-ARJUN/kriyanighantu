@@ -132,9 +132,9 @@ const Verb = () => {
                     </button>
                   </p>
                   <p><strong>Root Index (धातुसंख्या) :</strong> {verb.rootIndex}</p>
-                  <p><strong>Gana (गण) :</strong> {verb.ganam}</p>
+                  <p><strong>Gana (गणः) :</strong> {verb.ganam}</p>
                   <p><strong>Properties (धातुविशेषाः) :</strong> {verb.transVerb}</p>
-                  <p><strong>It Agma (इट् आगमम्) :</strong> {verb.ItAgma}</p>
+                  <p><strong>It Agma (इट् आगमः) :</strong> {verb.ItAgma}</p>
                   <p><strong>Derivation (व्युत्पत्तिः) :</strong> {verb.derivation}</p>
                   <p><strong>Example (उदाहरणम्) :</strong> {verb.example}</p>
 

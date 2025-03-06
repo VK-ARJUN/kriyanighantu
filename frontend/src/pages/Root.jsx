@@ -94,7 +94,7 @@ const Root = () => {
 
               {expandedRoot === root.root && (
                 <div className="mt-2 text-gray-700">
-                  <p><strong>Gana (गण) :</strong> {root.ganam}</p>
+                  <p><strong>Gana (गणः) :</strong> {root.ganam}</p>
                   <p><strong>Root Index (धातुसंख्या) :</strong> {root.rootIndex}</p>
 
                   {root.verbs && root.verbs.length > 0 && (
